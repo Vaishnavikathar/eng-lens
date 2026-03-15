@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── Organizations ───────────────────────────────
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teams        Team[]
+  users        User[]
+  integrations Integration[]
+}
+
+// ─── Teams ───────────────────────────────────────
+
+model Team {
+  id    String @id @default(cuid())
+  name  String
+  slug  String
+  orgId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id])
+  members      TeamMember[]
+  activities   Activity[]
+  reports      Report[]
+
+  @@unique([orgId, slug])
+}
+
+// ─── Users ───────────────────────────────────────
+
+model User {
+  id        String  @id @default(cuid())
+  name      String
+  email     String  @unique
+  avatarUrl String?
+  orgId     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id])
+  memberships  TeamMember[]
+  activities   Activity[]
+}
+
+// ─── Team Members ────────────────────────────────
+
+model TeamMember {
+  id     String @id @default(cuid())
+  teamId String
+  userId String
+  role   String @default("member") // member | lead | manager
+
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([teamId, userId])
+}
+
+// ─── Integrations ────────────────────────────────
+
+model Integration {
+  id     String @id @default(cuid())
+  orgId  String
+  type   String // github | jira | slack | cicd
+  config String @default("{}") // JSON string for config
+  credentials String @default("{}") // JSON string for encrypted credentials
+  active       Boolean @default(true)
+  lastSyncedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id])
+  activities   Activity[]
+}
+
+// ─── Activities ──────────────────────────────────
+// Unified model for all engineering events
+
+model Activity {
+  id            String  @id @default(cuid())
+  integrationId String?
+  teamId        String?
+  userId        String?
+
+  source   String // github | jira | slack | cicd
+  category String // pr | commit | review | issue | deploy | message
+  status   String @default("open") // open | merged | closed | in_progress | blocked | done
+
+  externalId String?
+  title      String
+  url        String?
+  metadata   String @default("{}") // JSON string for extra data
+
+  externalCreatedAt DateTime?
+  externalUpdatedAt DateTime?
+  ingestedAt        DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  integration Integration? @relation(fields: [integrationId], references: [id])
+  team        Team?        @relation(fields: [teamId], references: [id])
+  user        User?        @relation(fields: [userId], references: [id])
+
+  @@index([source])
+  @@index([category])
+  @@index([status])
+  @@index([teamId])
+  @@index([ingestedAt])
+}
+
+// ─── Reports ─────────────────────────────────────
+
+model Report {
+  id     String @id @default(cuid())
+  teamId String?
+  type   String // daily | sprint | on_demand
+
+  summaryMd String?  // Full markdown report
+  sections  String   @default("[]") // JSON array of report sections
+
+  periodStart DateTime?
+  periodEnd   DateTime?
+  generatedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+
+  team     Team?          @relation(fields: [teamId], references: [id])
+  reportSections ReportSection[]
+
+  @@index([teamId])
+  @@index([generatedAt])
+}
+
+// ─── Report Sections ─────────────────────────────
+
+model ReportSection {
+  id       String @id @default(cuid())
+  reportId String
+  category String // progress | blockers | risks | team_activity
+  contentMd String
+  sortOrder Int    @default(0)
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+}

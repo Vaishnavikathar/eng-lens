@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EngLens Reports | Engineering Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a413ec",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1c1022",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(43, 24, 52, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(164, 19, 236, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(164, 19, 236, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+<aside class="w-64 border-r border-primary/10 bg-background-light dark:bg-background-dark/50 flex flex-col h-screen sticky top-0">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">lens_blur</span>
+</div>
+<div>
+<h1 class="text-lg font-bold leading-none tracking-tight">EngLens</h1>
+<p class="text-xs text-slate-500 dark:text-primary/60 font-medium">Engineering Intelligence</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-lg shadow-primary/20" href="#">
+<span class="material-symbols-outlined text-[22px] fill-1">description</span>
+<span class="text-sm font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">account_tree</span>
+<span class="text-sm font-medium">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">groups</span>
+<span class="text-sm font-medium">Team</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-4 border-t border-primary/10">
+<div class="flex items-center gap-3 p-2 bg-primary/5 rounded-xl">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border border-primary/30">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Avatar of a professional engineer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnuGQ6Xl7iK8lnkEJQGc76MLPsLNTO_bT_qxRG60WUFAHb7koM8zB9P3Cqg7xntuX7bQgENhqWdKoD0X8l6NaDpyec7vN5IzDHXD88QblMFW7ox2dEPR6rD7tIBAzeSEFRHkrBMBaWUSbteoCVwgHpGZpJSKX0NLb7lrG9wmGASKcF-vWO7-YhDwnO6kPgBLg4T7r81KuME9BEzMHlpCuU92fTYa3xBOAs28gMMzuy7goyDNTrh85Px4yKOAoiF5pvPNSasEzlOBM"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold truncate">Alex Chen</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Engineering Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<header class="h-16 border-b border-primary/10 flex items-center justify-between px-8 bg-background-light/50 dark:bg-background-dark/50 backdrop-blur-md z-10">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative max-w-md w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-primary/5 border-none focus:ring-1 focus:ring-primary rounded-xl py-2 pl-10 pr-4 text-sm placeholder:text-slate-500" placeholder="Search reports, teams, or dates..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/25">
+<span class="material-symbols-outlined text-lg">calendar_add_on</span>
+                    Schedule Report
+                </button>
+</div>
+</header>
+<div class="flex-1 flex overflow-hidden">
+<div class="flex-1 flex flex-col p-8 overflow-y-auto custom-scrollbar">
+<div class="mb-8">
+<h2 class="text-3xl font-black tracking-tight mb-1 text-slate-900 dark:text-white">Reports</h2>
+<p class="text-slate-500 dark:text-slate-400">AI-generated engineering summaries and metrics</p>
+</div>
+<div class="flex gap-1 p-1 bg-primary/5 rounded-xl w-fit mb-8">
+<button class="px-6 py-2 text-sm font-semibold rounded-lg bg-background-light dark:bg-background-dark text-primary shadow-sm">Daily Reports</button>
+<button class="px-6 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-primary transition-colors">Sprint Reports</button>
+<button class="px-6 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-primary transition-colors">Custom</button>
+</div>
+<div class="bg-background-light dark:bg-background-dark/30 rounded-2xl border border-primary/10 overflow-hidden">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-primary/5 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-widest font-bold">
+<th class="px-6 py-4">Date</th>
+<th class="px-6 py-4">Type</th>
+<th class="px-6 py-4">Team</th>
+<th class="px-6 py-4">Summary Preview</th>
+<th class="px-6 py-4 text-center">Channels</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5">
+<tr class="hover:bg-primary/5 transition-colors group cursor-pointer">
+<td class="px-6 py-5 text-sm font-medium">Oct 24, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">Daily</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-400">Platform Eng</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">Completed API migration for v2 endpoints...</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">chat_bubble</span>
+<span class="material-symbols-outlined text-lg text-primary/60">mail</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-auto">
+                                        VIEW <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group cursor-pointer bg-primary/5 border-l-4 border-primary">
+<td class="px-6 py-5 text-sm font-medium">Oct 23, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Sprint</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-400">Mobile Core</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">Sprint 42 final retrospective and release prep...</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">chat_bubble</span>
+<span class="material-symbols-outlined text-lg text-primary">mail</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-xs font-bold text-primary flex items-center gap-1 ml-auto">
+                                        VIEW <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group cursor-pointer">
+<td class="px-6 py-5 text-sm font-medium">Oct 23, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">Daily</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-400">Data Science</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">Model training pipeline optimized for LLM...</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">chat_bubble</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-auto">
+                                        VIEW <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group cursor-pointer">
+<td class="px-6 py-5 text-sm font-medium">Oct 22, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">Daily</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-400">Platform Eng</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">K8s cluster maintenance scheduled for weekend...</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">chat_bubble</span>
+<span class="material-symbols-outlined text-lg text-primary">mail</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-auto">
+                                        VIEW <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group cursor-pointer">
+<td class="px-6 py-5 text-sm font-medium">Oct 21, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">Daily</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-400">Frontend Team</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">UI library updated to v4.0 with Tailwind...</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary/60">mail</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-auto">
+                                        VIEW <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group cursor-pointer">
+<td class="px-6 py-5 text-sm font-medium">Oct 20, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Sprint</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-400">Mobile Core</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">Beta release candidate ready for QA review...</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">chat_bubble</span>
+<span class="material-symbols-outlined text-lg text-primary">mail</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-auto">
+                                        VIEW <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<aside class="w-[450px] border-l border-primary/10 glass-panel flex flex-col overflow-hidden">
+<div class="p-6 border-b border-primary/10 flex items-center justify-between bg-white/5">
+<div>
+<h3 class="text-xl font-bold">Oct 23 Summary</h3>
+<p class="text-xs text-primary font-semibold">Sprint Report · Mobile Core</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg hover:bg-white/10 text-slate-400"><span class="material-symbols-outlined">share</span></button>
+<button class="p-2 rounded-lg hover:bg-white/10 text-slate-400"><span class="material-symbols-outlined">download</span></button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
+<section>
+<div class="flex items-center gap-2 text-primary mb-3">
+<span class="material-symbols-outlined fill-1">trending_up</span>
+<h4 class="text-sm font-bold uppercase tracking-wider">Progress</h4>
+</div>
+<div class="space-y-3 pl-4 border-l-2 border-primary/20">
+<p class="text-sm text-slate-300 leading-relaxed">Completed <span class="text-white font-medium">85%</span> of the planned feature set for v1.2 Release Candidate.</p>
+<ul class="space-y-2">
+<li class="text-sm text-slate-400 flex items-start gap-2">
+<span class="text-primary mt-1 text-[10px]">●</span>
+                                    Integrated new authentication flow across iOS and Android.
+                                </li>
+<li class="text-sm text-slate-400 flex items-start gap-2">
+<span class="text-primary mt-1 text-[10px]">●</span>
+                                    Optimized image caching logic, reducing latency by 40%.
+                                </li>
+</ul>
+</div>
+</section>
+<section>
+<div class="flex items-center gap-2 text-amber-500 mb-3">
+<span class="material-symbols-outlined fill-1">error</span>
+<h4 class="text-sm font-bold uppercase tracking-wider">Blockers</h4>
+</div>
+<div class="space-y-3 pl-4 border-l-2 border-amber-500/20">
+<div class="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+<p class="text-sm text-amber-200/90 font-medium mb-1">Third-party API Downtime</p>
+<p class="text-xs text-slate-400">Payment provider's sandbox has been unstable, delaying checkout integration testing for 12 hours.</p>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center gap-2 text-rose-500 mb-3">
+<span class="material-symbols-outlined fill-1">warning</span>
+<h4 class="text-sm font-bold uppercase tracking-wider">Risks</h4>
+</div>
+<div class="space-y-3 pl-4 border-l-2 border-rose-500/20">
+<p class="text-sm text-slate-300">Impending release date vs. QA bandwidth. Current bug backlog has <span class="text-rose-400 font-bold">12 high-priority items</span> still open.</p>
+</div>
+</section>
+<section>
+<div class="flex items-center gap-2 text-indigo-400 mb-3">
+<span class="material-symbols-outlined fill-1">bolt</span>
+<h4 class="text-sm font-bold uppercase tracking-wider">Team Activity</h4>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-white/5 border border-white/5">
+<p class="text-2xl font-black text-white">42</p>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-tight">PRs Merged</p>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/5">
+<p class="text-2xl font-black text-white">156</p>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Commits</p>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/5">
+<p class="text-2xl font-black text-white">4</p>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Incidents</p>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/5">
+<p class="text-2xl font-black text-white">94%</p>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Focus Score</p>
+</div>
+</div>
+</section>
+</div>
+<div class="p-6 bg-white/5 border-t border-primary/10">
+<button class="w-full py-3 rounded-xl bg-primary/20 hover:bg-primary/30 text-primary font-bold text-sm transition-all border border-primary/30">
+                        Open Full Interactive Report
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+</body></html>
