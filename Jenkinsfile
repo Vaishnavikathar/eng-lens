@@ -2,54 +2,76 @@ pipeline {
     agent any
 
     environment {
-        PRISMA_CLI_BINARY_TARGETS = "native"
+        NODE_ENV = 'production'
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Vaishnavikathar/eng-lens.git'
+                git branch: 'main',
+                    url: 'https://github.com/Vaishnavikathar/eng-lens.git'
+            }
+        }
+
+        stage('Clean Workspace') {
+            steps {
+                dir('app') {
+                    sh '''
+                        rm -rf node_modules package-lock.json .next
+                    '''
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 dir('app') {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Generate Prisma') {
-            steps {
-                dir('app') {
                     sh '''
-                    npm install prisma @prisma/client
-                    npx prisma generate --no-engine
+                        npm install
                     '''
                 }
             }
         }
 
-        stage('Build') {
+        stage('Generate Prisma Client') {
             steps {
                 dir('app') {
-                    sh 'npm run build'
+                    sh '''
+                        npx prisma generate
+                    '''
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Build Next.js App') {
             steps {
                 dir('app') {
                     sh '''
-                    pm2 stop eng-lens || true
-                    pm2 start npm --name eng-lens -- start
-                    pm2 save
+                        npm run build
                     '''
                 }
             }
+        }
+
+        stage('Start Application (Test Run)') {
+            steps {
+                dir('app') {
+                    sh '''
+                        nohup npm start > app.log 2>&1 &
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Build & Deployment Successful"
+        }
+
+        failure {
+            echo "❌ Build Failed — Check Logs"
         }
     }
 }
