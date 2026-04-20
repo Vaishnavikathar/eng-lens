@@ -1,65 +1,52 @@
 pipeline {
     agent any
 
-    environment {
-        NODE_ENV = 'production'
-    }
-
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/Vaishnavikathar/eng-lens.git'
+                url: 'https://github.com/Vaishnavikathar/eng-lens.git'
             }
         }
 
-        stage('Clean Workspace') {
+        stage('Verify Node') {
             steps {
-                dir('app') {
-                    sh '''
-                        rm -rf node_modules package-lock.json .next
-                    '''
-                }
+                sh '''
+                    node -v
+                    npm -v
+                '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 dir('app') {
-                    sh '''
-                        npm install
-                    '''
+                    sh 'npm install'
                 }
             }
         }
 
-        stage('Generate Prisma Client') {
+        stage('Prisma Generate') {
             steps {
                 dir('app') {
-                    sh '''
-                        npx prisma generate
-                    '''
+                    sh 'npx prisma generate'
                 }
             }
         }
 
-        stage('Build Next.js App') {
+        stage('Build App') {
             steps {
                 dir('app') {
-                    sh '''
-                        npm run build
-                    '''
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('Start Application (Test Run)') {
+        stage('Run (Test)') {
             steps {
                 dir('app') {
-                    sh '''
-                        nohup npm start > app.log 2>&1 &
-                    '''
+                    sh 'nohup npm start > app.log 2>&1 &'
                 }
             }
         }
@@ -67,11 +54,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build & Deployment Successful"
+            echo "✅ Deployment Successful"
         }
-
         failure {
-            echo "❌ Build Failed — Check Logs"
+            echo "❌ Build Failed"
         }
     }
 }
