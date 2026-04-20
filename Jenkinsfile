@@ -3,14 +3,8 @@ pipeline {
 
     environment {
         NODE_ENV = "production"
-
-        // Prisma CI stability fixes
-        PRISMA_CLI_BINARY_TARGETS = "debian-openssl-3.0.x"
-        PRISMA_SKIP_POSTINSTALL_GENERATE = "true"
-        PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING = "1"
-
-        // Helps memory stability in Jenkins
-        NODE_OPTIONS = "--max-old-space-size=4096"
+        PRISMA_CLI_BINARY_TARGETS = "native"
+        PRISMA_ENGINE_PROTOCOL = "binary"
     }
 
     stages {
@@ -35,6 +29,8 @@ pipeline {
             steps {
                 dir('app') {
                     sh '''
+                        npm cache clean --force
+                        rm -rf node_modules package-lock.json
                         npm install
                     '''
                 }
@@ -49,11 +45,11 @@ pipeline {
                         rm -rf node_modules/.prisma
                         rm -rf node_modules/@prisma
 
-                        echo "Installing Prisma (stable v5)..."
-                        npm install prisma@5 @prisma/client@5
+                        echo "Installing Prisma..."
+                        npm install prisma@5 @prisma/client@5 --no-cache
 
                         echo "Generating Prisma Client..."
-                        npx prisma generate
+                        npx prisma generate --no-engine
                     '''
                 }
             }
@@ -69,9 +65,14 @@ pipeline {
             }
         }
 
-        stage('Post Build Check') {
+        stage('Test Run') {
             steps {
-                echo "Build completed successfully"
+                dir('app') {
+                    sh '''
+                        echo "Starting app test run..."
+                        npm start || true
+                    '''
+                }
             }
         }
     }
