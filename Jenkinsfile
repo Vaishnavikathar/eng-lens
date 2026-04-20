@@ -3,30 +3,34 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
+        stage('Checkout') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/Vaishnavikathar/eng-lens.git'
             }
         }
 
-        stage('Install') {
+        stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                dir('app') {
+                    sh 'npm install'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                dir('app') {
+                    sh 'npm run build'
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Start App') {
             steps {
-                sh '''
-                pm2 restart eng-lens || pm2 start npm --name "eng-lens" -- start
-                '''
+                dir('app') {
+                    sh 'pm2 restart eng-lens || pm2 start npm --name eng-lens -- start'
+                }
             }
         }
     }
