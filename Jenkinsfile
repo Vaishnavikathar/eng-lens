@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PRISMA_CLI_BINARY_TARGETS = "native"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -20,8 +24,10 @@ pipeline {
         stage('Generate Prisma') {
             steps {
                 dir('app') {
-                    sh 'npm install prisma @prisma/client'
-                    sh 'npx prisma generate'
+                    sh '''
+                    npm install prisma @prisma/client
+                    npx prisma generate --no-engine
+                    '''
                 }
             }
         }
@@ -39,7 +45,7 @@ pipeline {
                 dir('app') {
                     sh '''
                     pm2 stop eng-lens || true
-                    pm2 start npm --name "eng-lens" -- start
+                    pm2 start npm --name eng-lens -- start
                     pm2 save
                     '''
                 }
