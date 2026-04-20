@@ -46,11 +46,13 @@ model Team {
 // ─── Users ───────────────────────────────────────
 
 model User {
-  id        String  @id @default(cuid())
-  name      String
-  email     String  @unique
-  avatarUrl String?
-  orgId     String
+  id           String  @id @default(cuid())
+  name         String
+  email        String  @unique
+  passwordHash String  @default("")
+  role         String  @default("user") // admin | user
+  avatarUrl    String?
+  orgId        String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

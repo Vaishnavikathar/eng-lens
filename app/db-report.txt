@@ -1,0 +1,59 @@
+========================================
+       EngLens Database Report
+========================================
+
+TABLES: Activity, Integration, Organization, Report, ReportSection, Team, TeamMember, User
+
+--- ORGANIZATION ---
+  EngLens Team (slug: englens-team)
+
+--- USERS (7) ---
+  [user ] Alex Rivera          alex@englens.dev
+  [user ] Jamie Smith          jamie@englens.dev
+  [user ] Lena Volkov          lena@englens.dev
+  [user ] Marcus Aurel         marcus@englens.dev
+  [user ] Sarah Chen           sarah@englens.dev
+  [user ] Seema kale           seema@englens.dev
+  [admin] Renuka Dhanawat      renuka@englens.dev
+
+--- TEAMS (3) ---
+  Backend Team: Renuka Dhanawat (lead), Sarah Chen (member), Jamie Smith (member)
+  Frontend Team: Alex Rivera (lead), Marcus Aurel (member)
+  Mobile Team: Lena Volkov (lead), Jamie Smith (member)
+
+--- ACTIVITIES (15 total) ---
+  [jira/issue] UI-78: Dark mode toggle improvements -> done
+  [github/pr] PR #228: Database connection pooling -> merged
+  [cicd/deploy] Deployment: Production v2.3.8 rollout -> done
+  [github/pr] PR #230: Mobile auth flow improvements -> merged
+  [jira/issue] BUG-104: Memory leak in worker processes -> open
+  [github/pr] PR #242: Infrastructure as code for GCP -> merged
+  [github/commit] Commit: Update readme documentation -> done
+  [jira/issue] CORE-442: API rate limiting implementation -> blocked
+  [jira/issue] PROJ-189: Fix login timeout on mobile safari -> open
+  [github/pr] PR #248: Refactor authentication middleware -> open
+  [github/review] Review Requested on PR #901 -> open
+  [cicd/deploy] Deployment: Staging v2.4.0-rc1 successful -> done
+  [jira/issue] EL-204: Fix CSS layout bug on dashboard -> done
+  [github/pr] PR #245: Add payment validation layer -> merged
+  [github/pr] PR #892: Core payments engine refactor -> merged
+
+--- REPORTS (3) ---
+  [sprint] Mobile Team: Sprint 42 completed with 89% velocity. Auth flow integrated across iOS and Android.
+  [daily] Backend Team: API migration for v3 endpoints. 6 PRs merged today.
+  [daily] Frontend Team: UI library v4.0. Dashboard responsiveness fixes.
+
+--- INTEGRATIONS (0) ---
+  (none configured yet)
+
+--- ROW COUNTS ---
+  Activity             15 rows
+  Integration          0 rows
+  Organization         1 rows
+  Report               3 rows
+  ReportSection        5 rows
+  Team                 3 rows
+  TeamMember           7 rows
+  User                 7 rows
+
+Done!

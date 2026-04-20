@@ -1,81 +1,70 @@
 "use client";
 
+import { useState } from "react";
 import {
   Github,
   RefreshCw,
   Copy,
   CheckCircle,
   Circle,
-  Clock,
   ExternalLink,
+  Zap,
+  Shield,
+  Bell,
+  Globe,
 } from "lucide-react";
 
 const integrations = [
   {
     name: "GitHub",
-    icon: (
-      <Github className="w-6 h-6 text-white" />
-    ),
-    iconBg: "bg-[#1a1d27]",
-    desc: "Pull requests, commits, and granular code review metrics from your repositories.",
+    icon: <Github className="w-5 h-5 text-white" />,
+    iconBg: "bg-[#24292e]",
+    desc: "Pull requests, commits, and code review metrics from your repositories.",
     status: "Connected",
-    statusColor: "text-emerald-400",
     connected: true,
     lastSync: "5 min ago",
     actionLabel: "Configure",
-    borderAccent: "border-t-emerald-500",
+    repos: 12,
   },
   {
     name: "Jira",
     icon: (
-      <div className="w-6 h-6 rounded bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold">
-        jira
+      <div className="w-5 h-5 rounded bg-blue-500 flex items-center justify-center text-white text-[8px] font-bold">
+        J
       </div>
     ),
-    iconBg: "bg-[#1a1d27]",
-    desc: "Issues, sprints, and project tracking to monitor delivery speed and bottlenecks.",
+    iconBg: "bg-blue-900/50",
+    desc: "Issues, sprints, and project tracking to monitor delivery speed.",
     status: "Connected",
-    statusColor: "text-emerald-400",
     connected: true,
     lastSync: "12 min ago",
     actionLabel: "Configure",
-    borderAccent: "border-t-blue-500",
+    repos: 4,
   },
   {
     name: "Slack",
     icon: (
-      <div className="w-6 h-6 rounded bg-[#4A154B] flex items-center justify-center text-white text-[10px] font-bold">
-        Slack
+      <div className="w-5 h-5 rounded bg-[#4A154B] flex items-center justify-center text-white text-[8px] font-bold">
+        S
       </div>
     ),
-    iconBg: "bg-[#1a1d27]",
-    desc: "Team messages, channels, and threads for communication velocity analysis.",
+    iconBg: "bg-[#4A154B]/30",
+    desc: "Team messages and threads for communication velocity analysis.",
     status: "Not Connected",
-    statusColor: "text-slate-500",
     connected: false,
     lastSync: null,
-    actionLabel: "Connect Slack",
-    borderAccent: "border-t-slate-600",
+    actionLabel: "Connect",
   },
   {
     name: "CI/CD Pipelines",
-    icon: (
-      <div className="w-6 h-6 flex items-center justify-center text-slate-400">
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </div>
-    ),
-    iconBg: "bg-[#1a1d27]",
-    desc: "Build status, deployment frequency, and failure rate tracking across environments.",
+    icon: <Zap className="w-5 h-5 text-slate-400" />,
+    iconBg: "bg-white/[0.03]",
+    desc: "Build status, deployment frequency, and failure rate tracking.",
     status: "Coming Soon",
-    statusColor: "text-slate-600",
     connected: false,
     lastSync: null,
-    actionLabel: "Notify me when available",
+    actionLabel: "Notify Me",
     disabled: true,
-    borderAccent: "border-t-slate-700",
   },
 ];
 
@@ -85,97 +74,128 @@ const webhooks = [
     tool: "GitHub Enterprise",
     lastEvent: "Mar 15, 2026 • 14:42:05",
     status: "Healthy",
-    statusColor: "text-emerald-400",
   },
   {
     endpoint: "/api/webhooks/jira/82c1",
     tool: "Jira Cloud",
     lastEvent: "Mar 15, 2026 • 14:35:12",
     status: "Healthy",
-    statusColor: "text-emerald-400",
   },
 ];
 
+const preferences = [
+  { label: "Email notifications", desc: "Receive daily summary emails", enabled: true, icon: Bell },
+  { label: "Real-time alerts", desc: "Push notifications for blockers", enabled: true, icon: Zap },
+  { label: "Public profile", desc: "Allow team members to view your profile", enabled: false, icon: Globe },
+  { label: "Two-factor auth", desc: "Enhanced security for your account", enabled: true, icon: Shield },
+];
+
+function Toggle({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className={`relative w-9 h-5 rounded-full transition-all duration-200 ${
+        enabled ? "bg-[var(--color-primary)]" : "bg-white/10"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+          enabled ? "translate-x-4" : "translate-x-0"
+        }`}
+      />
+    </button>
+  );
+}
+
 export default function SettingsPage() {
+  const [prefs, setPrefs] = useState(preferences.map((p) => p.enabled));
+
+  const togglePref = (index: number) => {
+    setPrefs((prev) => prev.map((v, i) => (i === index ? !v : v)));
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Breadcrumb */}
-      <div className="text-sm text-slate-500">
+      <div className="text-xs text-[var(--color-text-muted)]">
         <span className="hover:text-white cursor-pointer transition-colors">
           Settings
         </span>
-        <span className="mx-2">›</span>
-        <span className="text-white font-semibold">Integrations</span>
+        <span className="mx-1.5 opacity-40">›</span>
+        <span className="text-white font-medium">Integrations</span>
       </div>
 
       <div>
-        <h2 className="text-3xl font-black text-white tracking-tight">
+        <h2 className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
           Integrations
         </h2>
-        <p className="text-slate-400 mt-1">
-          Connect your engineering tools to centralize your workflow and gain
-          insights.
+        <p className="text-[var(--color-text-muted)] mt-0.5 text-sm">
+          Connect your engineering tools to centralize your workflow
         </p>
       </div>
 
       {/* Integration cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {integrations.map((integration, i) => (
           <div
             key={integration.name}
-            className={`glass-card p-6 border-t-2 ${integration.borderAccent} animate-fade-in-up ${
-              integration.disabled ? "opacity-60" : ""
+            className={`glass-card p-5 animate-fade-in-up ${
+              integration.disabled ? "opacity-50" : ""
             }`}
-            style={{ animationDelay: `${i * 0.1}s` }}
+            style={{ animationDelay: `${i * 0.08}s` }}
           >
-            <div className="flex items-start justify-between mb-4">
-              <div
-                className={`w-12 h-12 rounded-xl ${integration.iconBg} border border-[var(--color-border)] flex items-center justify-center`}
-              >
-                {integration.icon}
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-10 h-10 rounded-lg ${integration.iconBg} border border-[var(--color-border)] flex items-center justify-center`}
+                >
+                  {integration.icon}
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">{integration.name}</h3>
+                  {integration.repos && (
+                    <p className="text-[10px] text-[var(--color-text-muted)]">
+                      {integration.repos} {integration.name === "Jira" ? "projects" : "repos"} connected
+                    </p>
+                  )}
+                </div>
               </div>
               <span
                 className={`status-badge border ${
                   integration.connected
-                    ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                     : integration.disabled
-                    ? "bg-slate-500/10 text-slate-600 border-slate-600/20"
-                    : "bg-slate-500/10 text-slate-400 border-slate-500/20"
+                    ? "bg-white/[0.03] text-[var(--color-text-muted)] border-[var(--color-border)]"
+                    : "bg-white/[0.03] text-[var(--color-text-secondary)] border-[var(--color-border)]"
                 }`}
               >
                 {integration.connected && (
-                  <CheckCircle className="w-3 h-3 mr-1" />
+                  <CheckCircle className="w-2.5 h-2.5 mr-0.5" />
                 )}
                 {integration.status}
               </span>
             </div>
 
-            <h3 className="text-lg font-bold text-white mb-2">
-              {integration.name}
-            </h3>
-            <p className="text-sm text-slate-400 mb-4 leading-relaxed">
+            <p className="text-xs text-[var(--color-text-muted)] mb-4 leading-relaxed">
               {integration.desc}
             </p>
 
             <div className="flex items-center justify-between">
               {integration.lastSync ? (
-                <span className="text-xs text-slate-500">
-                  Last synced: {integration.lastSync}
+                <span className="text-[10px] text-[var(--color-text-muted)] flex items-center gap-1">
+                  <Circle className="w-1.5 h-1.5 fill-emerald-400 text-emerald-400" />
+                  Synced {integration.lastSync}
                 </span>
-              ) : integration.disabled ? (
-                <span className="text-xs text-slate-600" />
               ) : (
-                <span className="text-xs text-slate-500">
-                  Enable real-time alerts
-                </span>
+                <span />
               )}
               <button
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   integration.connected
-                    ? "border border-[var(--color-primary)]/30 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10"
+                    ? "btn-outline text-xs py-1.5"
                     : integration.disabled
-                    ? "border border-slate-700 text-slate-500 cursor-not-allowed"
-                    : "bg-gradient-to-r from-[var(--color-primary)] to-purple-500 text-white shadow-lg shadow-[var(--color-primary)]/20 hover:opacity-90"
+                    ? "border border-[var(--color-border)] text-[var(--color-text-muted)] cursor-not-allowed"
+                    : "btn-primary text-xs py-1.5"
                 }`}
                 disabled={integration.disabled}
               >
@@ -186,72 +206,97 @@ export default function SettingsPage() {
         ))}
       </div>
 
+      {/* Preferences */}
+      <div className="glass-card overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-[var(--color-border)]">
+          <h3 className="text-sm font-semibold text-white">Preferences</h3>
+          <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
+            Manage your notification and security settings
+          </p>
+        </div>
+        <div className="divide-y divide-[var(--color-border)]">
+          {preferences.map((pref, i) => (
+            <div key={pref.label} className="flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.01] transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-[var(--color-border)] flex items-center justify-center">
+                  <pref.icon className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">{pref.label}</p>
+                  <p className="text-[11px] text-[var(--color-text-muted)]">{pref.desc}</p>
+                </div>
+              </div>
+              <Toggle enabled={prefs[i]} onToggle={() => togglePref(i)} />
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Webhook Status */}
       <div className="glass-card overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+        <div className="px-5 py-3.5 border-b border-[var(--color-border)] flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-white">Webhook Status</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Monitoring real-time data ingestion health
+            <h3 className="text-sm font-semibold text-white">Webhook Status</h3>
+            <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
+              Real-time data ingestion health
             </p>
           </div>
-          <button className="flex items-center gap-2 text-xs font-semibold text-[var(--color-primary)] hover:underline">
+          <button className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-light)] transition-colors">
             <RefreshCw className="w-3 h-3" />
             Refresh
           </button>
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-[var(--color-border-subtle)]">
-              <th className="text-left px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Endpoint URL
-              </th>
-              <th className="text-left px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Integrated Tool
-              </th>
-              <th className="text-left px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Last Received Event
-              </th>
-              <th className="text-left px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {webhooks.map((wh) => (
-              <tr
-                key={wh.endpoint}
-                className="border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-card-hover)] transition-colors"
-              >
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <code className="text-xs text-[var(--color-primary)] bg-[var(--color-primary)]/8 px-2 py-1 rounded font-mono">
-                      {wh.endpoint}
-                    </code>
-                    <button className="text-slate-500 hover:text-white transition-colors">
-                      <Copy className="w-3 h-3" />
-                    </button>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <Circle className="w-2 h-2 fill-current text-emerald-500" />
-                    <span className="text-sm text-slate-300">{wh.tool}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-400">
-                  {wh.lastEvent}
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`flex items-center gap-1.5 text-xs font-semibold ${wh.statusColor}`}>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    {wh.status}
-                  </span>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[var(--color-border)]">
+                <th className="text-left px-5 py-2.5 section-label text-[var(--color-text-muted)]">
+                  Endpoint
+                </th>
+                <th className="text-left px-5 py-2.5 section-label text-[var(--color-text-muted)]">
+                  Tool
+                </th>
+                <th className="text-left px-5 py-2.5 section-label text-[var(--color-text-muted)]">
+                  Last Event
+                </th>
+                <th className="text-left px-5 py-2.5 section-label text-[var(--color-text-muted)]">
+                  Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {webhooks.map((wh) => (
+                <tr
+                  key={wh.endpoint}
+                  className="border-b border-[var(--color-border)] last:border-0 hover:bg-white/[0.01] transition-colors"
+                >
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-1.5">
+                      <code className="text-xs text-[var(--color-primary)] bg-[var(--color-primary)]/8 px-1.5 py-0.5 rounded font-mono">
+                        {wh.endpoint}
+                      </code>
+                      <button className="text-[var(--color-text-muted)] hover:text-white transition-colors">
+                        <Copy className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className="text-xs text-[var(--color-text-secondary)]">{wh.tool}</span>
+                  </td>
+                  <td className="px-5 py-3 text-xs text-[var(--color-text-muted)]">
+                    {wh.lastEvent}
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {wh.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

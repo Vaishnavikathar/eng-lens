@@ -1,6 +1,6 @@
 # EngLens — Progress Tracker
 
-> Last updated: **March 15, 2026** by Navjot Singh
+> Last updated: **March 15, 2026** by Renuka Dhanawat
 
 ---
 
