@@ -6,8 +6,11 @@ pipeline {
 
         // Prisma CI stability fixes
         PRISMA_CLI_BINARY_TARGETS = "debian-openssl-3.0.x"
-        PRISMA_ENGINES_MIRROR = "https://binaries.prisma.sh"
-        PRISMA_SKIP_POSTINSTALL_GENERATE = "false"
+        PRISMA_SKIP_POSTINSTALL_GENERATE = "true"
+        PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING = "1"
+
+        // Helps memory stability in Jenkins
+        NODE_OPTIONS = "--max-old-space-size=4096"
     }
 
     stages {
@@ -46,8 +49,8 @@ pipeline {
                         rm -rf node_modules/.prisma
                         rm -rf node_modules/@prisma
 
-                        echo "Installing Prisma..."
-                        npm install prisma @prisma/client
+                        echo "Installing Prisma (stable v5)..."
+                        npm install prisma@5 @prisma/client@5
 
                         echo "Generating Prisma Client..."
                         npx prisma generate
@@ -68,11 +71,7 @@ pipeline {
 
         stage('Post Build Check') {
             steps {
-                dir('app') {
-                    sh '''
-                        echo "Build completed successfully"
-                    '''
-                }
+                echo "Build completed successfully"
             }
         }
     }
