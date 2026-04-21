@@ -22,10 +22,8 @@ pipeline {
         stage('Verify Tools') {
             steps {
                 sh '''
-                    echo "Node version:"
-                    node --version
-                    echo "NPM version:"
-                    npm --version
+                    echo "Node: $(node --version)"
+                    echo "NPM:  $(npm --version)"
                 '''
             }
         }
@@ -34,6 +32,7 @@ pipeline {
             steps {
                 dir("${APP_DIR}") {
                     sh '''
+                        echo 'DATABASE_URL="file:./dev.db"' > .env
                         npm cache clean --force
                         rm -rf node_modules package-lock.json
                         npm install
@@ -46,7 +45,17 @@ pipeline {
             steps {
                 dir("${APP_DIR}") {
                     sh '''
-                        echo "DATABASE_URL=file:./dev.db" > .env
+                        echo 'DATABASE_URL="file:./dev.db"' > .env
+
+                        echo "Fixing permissions on workspace..."
+                        chmod -R 755 .
+
+                        echo "Setting PRISMA_ENGINES_DIR to workspace..."
+                        export PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+                        export TMPDIR="${WORKSPACE}/tmp"
+                        mkdir -p "${WORKSPACE}/tmp"
+                        chmod 777 "${WORKSPACE}/tmp"
+
                         echo "Generating Prisma Client..."
                         npx prisma generate
                     '''
@@ -58,6 +67,7 @@ pipeline {
             steps {
                 dir("${APP_DIR}") {
                     sh '''
+                        echo 'DATABASE_URL="file:./dev.db"' > .env
                         echo "Running Prisma Migrations..."
                         npx prisma migrate deploy
                     '''
@@ -81,62 +91,6 @@ pipeline {
             }
         }
 
-        stage('Deploy to AWS EC2') {
-            when {
-                branch 'main'
-            }
-            steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'EC2_SSH_KEY',
-                        keyFileVariable: 'SSH_KEY',
-                        usernameVariable: 'EC2_USER'
-                    ),
-                    string(
-                        credentialsId: 'EC2_HOST',
-                        variable: 'EC2_HOST'
-                    )
-                ]) {
-                    sh '''
-                        echo "Deploying to EC2: $EC2_HOST"
-
-                        # Sync all files except node_modules and .next
-                        rsync -avz --delete \
-                            --exclude='node_modules' \
-                            --exclude='.next' \
-                            --exclude='*.db' \
-                            -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" \
-                            ./ ${EC2_USER}@${EC2_HOST}:/home/${EC2_USER}/eng-lens/
-
-                        # Run commands on EC2
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no \
-                            ${EC2_USER}@${EC2_HOST} bash << 'ENDSSH'
-                            set -e
-                            cd /home/ubuntu/eng-lens/app
-
-                            echo "Setting DATABASE_URL for SQLite..."
-                            echo "DATABASE_URL=file:./dev.db" > .env
-
-                            echo "Installing dependencies..."
-                            npm install
-
-                            echo "Generating Prisma client..."
-                            npx prisma generate
-
-                            echo "Running migrations..."
-                            npx prisma migrate deploy
-
-                            echo "Restarting app..."
-                            pm2 restart eng-lens 2>/dev/null || \
-                                pm2 start npm --name "eng-lens" -- start
-                            pm2 save
-
-                            echo "Done!"
-ENDSSH
-                    '''
-                }
-            }
-        }
     }
 
     post {
