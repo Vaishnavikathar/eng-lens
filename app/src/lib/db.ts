@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaClient } from "../generated/prisma";   // ← your custom output path
+import { PrismaLibSQL } from "@prisma/adapter-libsql"; // ← note: PrismaLibSQL not PrismaLibSql
 import path from "path";
 
 const globalForPrisma = globalThis as unknown as {
@@ -7,10 +7,8 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  // Prisma CLI resolves "file:./dev.db" relative to the schema dir (prisma/).
-  // libsql needs an absolute path to find the same file at runtime.
-  const dbPath = path.join(process.cwd(), "dev.db");
-  const adapter = new PrismaLibSql({ url: `file:${dbPath}` });
+  const dbPath = path.join(process.cwd(), "prisma", "dev.db");
+  const adapter = new PrismaLibSQL({ url: `file:${dbPath}` });
   return new PrismaClient({ adapter });
 }
 
