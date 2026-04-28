@@ -38,40 +38,36 @@ pipeline {
         }
 
         stage('🗄️ Run DB Migrations') {
-            steps {
-                withCredentials([string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_KEY')]) {
-                    sh '''
-                        docker run --rm \
-                          -e DATABASE_URL="file:./prisma/dev.db" \
-                          -e GEMINI_API_KEY=$GEMINI_KEY \
-                          $IMAGE_NAME:latest \
-                          npx prisma migrate deploy
-                    '''
-                }
-            }
-        }
+    steps {
+        sh '''
+            docker run --rm \
+            -e DATABASE_URL="file:./prisma/dev.db" \
+            $IMAGE_NAME:latest \
+            npx prisma migrate deploy
+        '''
+    }
+}
 
-        stage('🚀 Deploy') {
-            steps {
-                withCredentials([string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_KEY')]) {
-                    sh '''
-                        # Stop & remove old container if running
-                        docker stop $CONTAINER_NAME || true
-                        docker rm   $CONTAINER_NAME || true
+stage('🚀 Deploy') {
+    steps {
+        withCredentials([string(credentialsId: 'GEMINI_API_KEY',
+            variable: 'GEMINI_KEY')]) {
+            sh '''
+                docker stop $CONTAINER_NAME || true
+                docker rm   $CONTAINER_NAME || true
 
-                        # Start new container
-                        docker run -d \
-                          --name $CONTAINER_NAME \
-                          --restart always \
-                          -p $HOST_PORT:$APP_PORT \
-                          -e DATABASE_URL="file:./prisma/dev.db" \
-                          -e GEMINI_API_KEY=$GEMINI_KEY \
-                          -v eng-lens-db:/app/prisma \
-                          $IMAGE_NAME:latest
-                    '''
-                }
-            }
+                docker run -d \
+                --name $CONTAINER_NAME \
+                --restart always \
+                -p $HOST_PORT:$APP_PORT \
+                -e DATABASE_URL="file:./prisma/dev.db" \
+                -e GEMINI_API_KEY=$GEMINI_KEY \
+                -v eng-lens-db:/app/prisma \
+                $IMAGE_NAME:latest
+            '''
         }
+    }
+}
 
         stage('🧹 Cleanup Old Images') {
             steps {
