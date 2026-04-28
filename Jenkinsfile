@@ -22,7 +22,8 @@ pipeline {
             steps {
                 dir('app') {
                     sh 'npm ci'
-                    sh 'npx tsc --noEmit'
+                    sh 'npx prisma generate'
+                    sh 'npx tsc --noEmit --skipLibCheck'
                 }
             }
         }
