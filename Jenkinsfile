@@ -14,7 +14,7 @@ pipeline {
         stage('📥 Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/RenukaDhanawat/eng-lens.git'
+                    url: 'https://github.com/Vaishnavikathar/eng-lens.git'
             }
         }
 
