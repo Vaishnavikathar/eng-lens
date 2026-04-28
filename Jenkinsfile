@@ -13,6 +13,7 @@ pipeline {
 
         stage('📥 Checkout') {
             steps {
+                sh 'docker system prune -f || true'  
                 git branch: 'main',
                     url: 'https://github.com/Vaishnavikathar/eng-lens.git'
             }
