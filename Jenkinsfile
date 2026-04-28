@@ -22,7 +22,7 @@ pipeline {
             steps {
                 dir('app') {
                     sh 'npm ci'
-                    sh 'npx prisma generate'
+                    sh 'npx prisma generate --schema=../prisma/schema.prisma'
                     sh 'npx tsc --noEmit --skipLibCheck'
                 }
             }
