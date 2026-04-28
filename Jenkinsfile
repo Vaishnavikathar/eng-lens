@@ -1,107 +1,90 @@
+// Jenkinsfile
 pipeline {
     agent any
 
     environment {
-        APP_DIR = 'app'
-    }
-
-    options {
-        timeout(time: 30, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeepStr: '10'))
+        IMAGE_NAME    = "eng-lens"
+        CONTAINER_NAME = "eng-lens-app"
+        APP_PORT      = "3000"
+        HOST_PORT     = "80"
     }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('📥 Checkout') {
             steps {
-                cleanWs()
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/RenukaDhanawat/eng-lens.git'
             }
         }
 
-        stage('Verify Tools') {
+        stage('🔍 Lint & Type Check') {
+            steps {
+                dir('app') {
+                    sh 'npm ci'
+                    sh 'npx tsc --noEmit'
+                }
+            }
+        }
+
+        stage('🐳 Build Docker Image') {
             steps {
                 sh '''
-                    echo "Node: $(node --version)"
-                    echo "NPM:  $(npm --version)"
+                    docker build -t $IMAGE_NAME:$BUILD_NUMBER .
+                    docker tag $IMAGE_NAME:$BUILD_NUMBER $IMAGE_NAME:latest
                 '''
             }
         }
 
-        stage('Install Dependencies') {
+        stage('🗄️ Run DB Migrations') {
             steps {
-                dir("${APP_DIR}") {
+                withCredentials([string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_KEY')]) {
                     sh '''
-                        echo 'DATABASE_URL="file:./dev.db"' > .env
-                        npm cache clean --force
-                        rm -rf node_modules package-lock.json
-                        npm install
+                        docker run --rm \
+                          -e DATABASE_URL="file:./prisma/dev.db" \
+                          -e GEMINI_API_KEY=$GEMINI_KEY \
+                          $IMAGE_NAME:latest \
+                          npx prisma migrate deploy
                     '''
                 }
             }
         }
 
-        stage('Prisma Generate') {
+        stage('🚀 Deploy') {
             steps {
-                dir("${APP_DIR}") {
+                withCredentials([string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_KEY')]) {
                     sh '''
-                        echo 'DATABASE_URL="file:./dev.db"' > .env
+                        # Stop & remove old container if running
+                        docker stop $CONTAINER_NAME || true
+                        docker rm   $CONTAINER_NAME || true
 
-                        echo "Fixing permissions on workspace..."
-                        chmod -R 755 .
-
-                        echo "Setting PRISMA_ENGINES_DIR to workspace..."
-                        export PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-                        export TMPDIR="${WORKSPACE}/tmp"
-                        mkdir -p "${WORKSPACE}/tmp"
-                        chmod 777 "${WORKSPACE}/tmp"
-
-                        echo "Generating Prisma Client..."
-                        npx prisma generate
+                        # Start new container
+                        docker run -d \
+                          --name $CONTAINER_NAME \
+                          --restart always \
+                          -p $HOST_PORT:$APP_PORT \
+                          -e DATABASE_URL="file:./prisma/dev.db" \
+                          -e GEMINI_API_KEY=$GEMINI_KEY \
+                          -v eng-lens-db:/app/prisma \
+                          $IMAGE_NAME:latest
                     '''
                 }
             }
         }
 
-        stage('Prisma Migrate') {
+        stage('🧹 Cleanup Old Images') {
             steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                        echo 'DATABASE_URL="file:./dev.db"' > .env
-                        echo "Running Prisma Migrations..."
-                        npx prisma migrate deploy
-                    '''
-                }
+                sh 'docker image prune -f'
             }
         }
-
-        stage('Build App') {
-            steps {
-                dir("${APP_DIR}") {
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Test Run') {
-            steps {
-                dir("${APP_DIR}") {
-                    sh 'npm test -- --passWithNoTests || true'
-                }
-            }
-        }
-
     }
 
     post {
         success {
-            echo '✅ Pipeline Succeeded!'
+            echo '✅ Deployment successful! App is live.'
         }
         failure {
-            echo '❌ Pipeline Failed — check logs above'
-        }
-        always {
-            cleanWs()
+            echo '❌ Pipeline failed. Check logs above.'
         }
     }
 }
